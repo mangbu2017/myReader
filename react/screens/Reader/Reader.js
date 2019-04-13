@@ -6,11 +6,15 @@ import {
     Text,
     View,
     TouchableWithoutFeedback,
+    Image,
 } from 'react-native';
 import { observable, computed } from 'mobx';
 import { observer } from 'mobx-react';
 import { 
     Container, 
+    Fab,
+    Icon,
+    Button,
 } from 'native-base';
 import UserInfo from '../../store/index';
 import {Dimensions} from 'react-native';
@@ -26,6 +30,7 @@ const {
 export default class Reader extends Component {
     @observable menu = false;
     @observable refreshing = false;
+    @observable active = true;
 
     @computed
     get itemChapterData() {
@@ -82,7 +87,20 @@ export default class Reader extends Component {
     _renderBottom() {
         return (
             <BottomView style={styles.bottom} ref="bottom">
-                <Text>Bottom</Text>
+                <View style={{
+                    opacity: 1,
+                }}>
+                    <Image 
+                        style={{
+                            width: 40,
+                            height: 40,
+                        }}
+                        source={require('../../assets/images/mulu.png')} 
+                    />
+                    <Text style={{
+                        color: '#fff',
+                    }}>目录</Text>
+                </View>
             </BottomView>
         )
     }
@@ -95,6 +113,12 @@ export default class Reader extends Component {
         )
     }
 
+    _renderFab() {
+        return (
+            <View></View>
+        )
+    }
+
     render() {
         return (
             <Container style={styles.container} onPress={this.showMenu}>
@@ -103,6 +127,9 @@ export default class Reader extends Component {
             }
             {
                 this._renderBottom()
+            }
+            {
+                this._renderFab()
             }   
             <FlatList
                 data={this.itemChapterData}
@@ -134,13 +161,14 @@ const styles = StyleSheet.create({
         height: 50,
         position: 'absolute',
         top: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
     },
     bottom: {
         width: windoWidth,
         height: 100,
         position: 'absolute',
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        zIndex: 100,
     }
 })
