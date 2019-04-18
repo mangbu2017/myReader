@@ -7,6 +7,9 @@ import ReaderWithDrawer from '../screens/Reader/index';
 import { Button, Text} from 'native-base';
 
 import MainWithDrawer from './MainWithDrawerNavigator';
+import SearchScreen from '../screens/SearchScreen'; 
+import BookListScreen from '../screens/BookListScreen';
+import BookDetailScreen from '../screens/BookDetailScreen';
 
 export default createStackNavigator({
     // 如果这样使用就只能直接写上了
@@ -44,6 +47,15 @@ export default createStackNavigator({
     },
     ReaderWithDrawer: {
         screen: ReaderWithDrawer,
+    },
+    Search: {
+        screen: SearchScreen,
+    },
+    BookList: {
+        screen: BookListScreen,
+    },
+    BookDetail: {
+        screen: BookDetailScreen,
     },
 }, {
     // 默认的页面组件，必须是上面已经配置的 页面

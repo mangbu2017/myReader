@@ -1,7 +1,7 @@
 import axios from 'react-native-axios';
 
 const instance = axios.create({
-    baseURL: 'http://192.168.199.132:9999/api/',
+    baseURL: 'http://192.168.199.245:9999/api/',
 });
 
 
@@ -12,6 +12,24 @@ export default {
             url: `book/${bookid}/${cpIndex}`,
         });
     },
+    getRank(type) {
+        return instance({
+            method: 'get',
+            url: `bookrank?type=${type}`,
+        });
+    },
+    getCategory(type) {
+        return instance({
+            method: 'get',
+            url: `category?type=${type}`,
+        });
+    },
+    getChapterList(id) {
+        return instance({
+            method: 'get',
+            url: `chapterlist?id=${id}`,
+        });
+    }
 };
 
 // //请求拦截处理

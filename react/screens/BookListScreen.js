@@ -16,35 +16,15 @@ import {
 	Button,
 	Icon,
 	Segment,
-	Text,
+    Text,
+    Left,
 } from 'native-base';
 import { observer } from 'mobx-react';
 import { observable, computed } from 'mobx';
-import API from '../api/index';
-import Detail from '../store/detail';
-
-const getRank = API.getRank;
+import List from '../store/list';
 
 @observer
-export default class SettingsScreen extends React.Component {
-	@observable all = true;
-	@observable month = false;
-	@observable week = false;
-	@observable listData = [];
-
-	// 没用上
-	@computed
-	get computedListData() {
-		return Array.from(this.listData);
-	}
-
-	updateListData = (type) => {
-		getRank(type).then(res => {
-			this.listData = res.data;
-		}).catch(err => {
-			console.log('getRank.error', err)
-		});
-	}
+export default class BookList extends React.Component {
 
 	_renderSeparator() {
 		return (
@@ -59,14 +39,10 @@ export default class SettingsScreen extends React.Component {
 		return (
 			<TouchableOpacity
                 onPress={() => {
-					console.log('跳转至详情页');
-					Detail.setDetail(item);
-					this.props.navigation.navigate('BookDetail');
                 }}
             >
                 <View style={{
 					height: 150,
-					// backgroundColor: 'red',
 					flexDirection: 'row',
 					alignItems: 'center',
                	}}>
@@ -83,15 +59,13 @@ export default class SettingsScreen extends React.Component {
 					<View style={{
 						width: 230,
 						marginLeft: 10,
-						// backgroundColor: 'red',
 					}}>
 						<View style={{
 							flexDirection: 'row',
-							// backgroundColor: 'green',
 							justifyContent: 'space-between',
 							alignItems: 'flex-end',
 						}}> 
-							<Text>{item.bookname}</Text>
+							<Text numberOfLines={1}>{item.bookname}</Text>
 							<Text 
 								style={{
 									fontSize: 14,
@@ -116,66 +90,35 @@ export default class SettingsScreen extends React.Component {
 		)
 	}
 
-
-
-	componentDidMount() {
-		this.updateListData('all');
+    // fetch listData
+    componentDidMount() {
+		List.fetchCategory(List.type);
 	}
 
 	render() {
 		return (
 			<Container>
 				<Header>
+                    <Left>
+                        <Button transparent onPress={() => {
+                            this.props.navigation.goBack();
+                        }}>
+                            <Icon name='arrow-back' />
+                        </Button>
+                    </Left>
 					<Body>
 						<Title style={{
 							fontSize: 14,
-						}}>热门排行</Title>
+						}}>{List.type}</Title>
 					</Body>
-					<Right>
-						<Button transparent>
-							<Icon name='ios-search' />
-						</Button>
-					</Right>
 				</Header>
-				<Segment>
-					<Button first active={this.all} onPress={() => {
-						if(!this.all) {
-							this.updateListData('all');
-						}
-						this.all = true;
-						this.month = false;
-						this.week = false;
-					}}>
-						<Text>总榜</Text>
-					</Button>
-					<Button active={this.month} onPress={() => {
-						if(!this.month) {
-							this.updateListData('month');
-						}
-						this.all = false;
-						this.month = true;
-						this.week = false;
-					}}>
-						<Text>月榜</Text>
-					</Button>
-					<Button last active={this.week} onPress={() => {
-						if(!this.week) {
-							this.updateListData('week');
-						}
-						this.all = false;
-						this.month = false;
-						this.week = true;
-					}}>
-						<Text>周榜</Text>
-					</Button>
-				</Segment>
 				<FlatList
 				    // 间隔渲染的组件
 					ItemSeparatorComponent={this._renderSeparator}
-					data={this.listData}
+					data={List.listData}
 					renderItem={this._renderItem}
 					keyExtractor={item => item._id}
-					onEndReached={this.loadChapter}
+					// onEndReached={this.loadChapter}
 					onEndReachedThreshold={0.5}
 				/>
 				
@@ -187,8 +130,3 @@ export default class SettingsScreen extends React.Component {
 		header: null,
 	};
 }
-// const styles = StyleSheet.create({
-// 	headerTitle: {
-// 		fontSize: 14,
-// 	},
-// });

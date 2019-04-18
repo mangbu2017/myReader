@@ -1,4 +1,7 @@
 import React from 'react';
+import { observer } from 'mobx-react'
+import { observable } from 'mobx';
+
 import {
   Image,
   Platform,
@@ -18,41 +21,131 @@ import {
     Button, 
     Icon, 
     Left, 
-    Body, 
+    Body,
+    Title, 
     Right,
     Item,
     Input, 
+    Grid,
+    Col,
 } from 'native-base';
 
 import { WebBrowser } from 'expo';
 import UserInfo from '../store/index';
 
+@observer
 export default class HomeScreen extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+
+    @observable keyword = '';
 
     // 写法不需要bind(this)
     navToReader = (item) => {
         UserInfo.checkReadingBook(item);
         this.props.navigation.navigate('Reader');
     }
+
+    search = () => {
+        console.log(this.keyword);
+    }
+
+    _rendGird = () => {
+        const book = UserInfo.bookshelf,
+              len = book.length,
+              set = Math.ceil(len / 3),
+              arr2d = [],
+              more = 3 * set - len;
+        
+        for(let i = 0; i < set; i ++) {
+            arr2d[0] = book.splice(0, 3);
+        }
+
+        for(let i = 0; i < more; i ++) {
+            arr2d[set - 1].push('string');
+        }
+
+        // console.log('arr2d: ', arr2d);
+
+        return (
+            arr2d.map((item, index) => (
+                <Grid
+                    key={index}
+                    style={{
+                        // backgroundColor: 'green',
+                    }}
+                >{
+                    this._rendCol(item)
+                }</Grid>
+            ))
+        )
+    }
+
+    _rendCol = (item) => {
+        
+        return item.map((item, index) => {
+
+            if(typeof item === 'string') {
+                return (
+                    <Col 
+                        key={index}
+                        style={{
+                        height: 200,
+                        // backgroundColor: '#635DB7',
+                    }}></Col>
+                )
+            } 
+            
+            return (
+                <Col 
+                    key={index} 
+                    style={{
+                        // backgroundColor: 'red',
+                        height: 200,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                >
+                    <TouchableOpacity onPress={() => {
+                        this.navToReader(item);
+                    }} key={index}>
+                        <View 
+                            style={{
+                                width: 110,
+                                height: 170,
+                            }}
+                        >
+                            <Image 
+                                source={require('../assets/images/5ca5b113bcbc8129b981e696.jpg')}
+                                style={{
+                                    width: 110,
+                                    height: 150,
+                                }}
+                            ></Image>
+                            <Text 
+                                style={{
+                                    textAlign: 'center',
+                                    fontSize: 13,
+                                }}
+                                numberOfLines={1}
+                            >{item.bookname}</Text>
+                        </View>
+                    </TouchableOpacity>
+                </Col>
+            )
+        });
+    }
     
     render() {
         return (
             <Container style={styles.container}>
                 {/** 滚动视图 */}
-                <Header searchBar>
-                    <Item style={{
-                        width: 50,
-                    }}>
-                        <Icon name="ios-search" />
-                        <Input placeholder="Search" />
-                    </Item>
-                    <Button>
-                        <Text>Search</Text>
-                    </Button>
+                <Header>
+                    <Body>
+                        <Title style={{
+                            fontSize: 14,
+                        }}>我的书架</Title>
+                    </Body>
                 </Header>
+            { /** 
                 <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                     {
                         UserInfo.bookshelf.map((item, index) => {
@@ -81,6 +174,11 @@ export default class HomeScreen extends React.Component {
                         })
                     }
                 </ScrollView>
+            */}
+            {
+                this._rendGird()
+            }
+            
             </Container>
         );
     }
@@ -99,6 +197,7 @@ export default class HomeScreen extends React.Component {
 const styles = StyleSheet.create({
     container: {
         // backgroundColor: 'blue',
+        // backgroundColor: 'yellow',
     },
     contentContainer: {
         paddingLeft: 20,

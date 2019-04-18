@@ -39,8 +39,30 @@ export default class Reader extends Component {
         });
     }
 
-    async componentWillMount() {
+    // 好像应该是在didmount里
+    async componentDidMount() {
+
+        // readingBook 没有章节列表
+        if(!UserInfo.readingBook.chapters || UserInfo.readingBook.chapters.length === 0) {
+            const id = UserInfo.readingBook._id;
+            // 在本地缓存中吗
+            if(UserInfo.cacheBook[id]) {
+                // 设置为本地缓存中的章节列表
+                UserInfo.readingBook.chapters = UserInfo.cacheBook[id];
+            }else {
+                // 获取章节列表并设置到缓存中
+                await UserInfo.fetchBookChapter();
+            }
+        }
+
+        // 获取第一章内容
         await UserInfo.fetchChapter(0);
+
+        console.log(UserInfo.readingBook);
+    }
+
+    async componentWillUnmount() {
+        UserInfo.saveData();
     }
 
     loadChapter = () => {
